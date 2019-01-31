@@ -2,12 +2,12 @@ package edu.buffalo.cse.cse486586.simplemessenger;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-import edu.buffalo.cse.cse486586.simplemessenger.R;
 
 import android.app.Activity;
 import android.content.Context;
@@ -152,10 +152,36 @@ public class SimpleMessengerActivity extends Activity {
         protected Void doInBackground(ServerSocket... sockets) {
             ServerSocket serverSocket = sockets[0];
             
-            /*
+            /*s
              * TODO: Fill in your server code that receives messages and passes them
              * to onProgressUpdate().
              */
+            //read from socket to ObjectInputStream object
+            Socket socket = null;
+            while (true)
+            try {
+                socket = serverSocket.accept();
+                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                //convert ObjectInputStream object to String
+                String message = (String) ois.readObject();
+                Log.d("Message Received: ", message);
+                publishProgress(message);
+                ois.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e){
+                e.printStackTrace();
+                break;
+            }
+
+
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //Send it for updating
             return null;
         }
 
@@ -168,14 +194,14 @@ public class SimpleMessengerActivity extends Activity {
             remoteTextView.append(strReceived + "\t\n");
             TextView localTextView = (TextView) findViewById(R.id.local_text_display);
             localTextView.append("\n");
-            
+
             /*
              * The following code creates a file in the AVD's internal storage and stores a file.
-             * 
+             *
              * For more information on file I/O on Android, please take a look at
              * http://developer.android.com/training/basics/data-storage/files.html
              */
-            
+
             String filename = "SimpleMessengerOutput";
             String string = strReceived + "\n";
             FileOutputStream outputStream;
@@ -216,6 +242,14 @@ public class SimpleMessengerActivity extends Activity {
                 /*
                  * TODO: Fill in your client code that sends out a message.
                  */
+
+                //https://stackoverflow.com/questions/5680259/using-sockets-to-send-and-receive-data
+                Log.d("Client","Sending message " + msgToSend);
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                oos.writeObject(msgToSend+"\n");
+                Log.d("Client","Sent ");
+                oos.close();
+
                 socket.close();
             } catch (UnknownHostException e) {
                 Log.e(TAG, "ClientTask UnknownHostException");
