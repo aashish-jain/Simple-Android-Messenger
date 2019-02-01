@@ -161,17 +161,19 @@ public class SimpleMessengerActivity extends Activity {
             while (true)
             try {
                 socket = serverSocket.accept();
+                //https://stackoverflow.com/questions/11521027/whats-the-difference-between-dataoutputstream-and-objectoutputstream
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+
                 //convert ObjectInputStream object to String
                 String message = (String) ois.readObject();
                 Log.d("Message Received: ", message);
                 publishProgress(message);
                 ois.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e){
-                e.printStackTrace();
+            }catch (ClassNotFoundException e) {
+                Log.e(TAG, "ServerTask ClassNotFoundException");
                 break;
+            } catch (IOException e) {
+                Log.e(TAG, "ServerTask socket IOException");
             }
 
 
@@ -244,9 +246,11 @@ public class SimpleMessengerActivity extends Activity {
                  */
 
                 //https://stackoverflow.com/questions/5680259/using-sockets-to-send-and-receive-data
+                //https://stackoverflow.com/questions/49654735/send-objects-and-strings-over-socket
+
                 Log.d("Client","Sending message " + msgToSend);
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                oos.writeObject(msgToSend+"\n");
+                oos.writeObject(msgToSend);
                 Log.d("Client","Sent ");
                 oos.close();
 
