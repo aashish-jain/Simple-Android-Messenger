@@ -166,6 +166,11 @@ public class SimpleMessengerActivity extends Activity {
 
                 //convert ObjectInputStream object to String
                 String message = (String) ois.readObject();
+
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                oos.writeByte(255);
+                oos.close();
+
                 Log.d("Message Received: ", message);
                 publishProgress(message);
                 ois.close();
@@ -252,8 +257,9 @@ public class SimpleMessengerActivity extends Activity {
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 oos.writeObject(msgToSend);
                 Log.d("Client","Sent ");
+                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                byte ack = ois.readByte();
                 oos.close();
-
                 socket.close();
             } catch (UnknownHostException e) {
                 Log.e(TAG, "ClientTask UnknownHostException");
