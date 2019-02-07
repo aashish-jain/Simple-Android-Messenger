@@ -4,8 +4,8 @@ import sys, os, time, platform
 
 def main():
   if len(sys.argv) != 2:
-    print "Please enter the number of AVDs you want to launch"
-    print "Usage: " + sys.argv[0] + " <number of AVDs>"
+    print ("Please enter the number of AVDs you want to launch")
+    print ("Usage: " + sys.argv[0] + " <number of AVDs>")
     return
 
   head = "emulator"
@@ -19,11 +19,11 @@ def main():
     kvm = " -qemu -enable-kvm"
   for i in range(int(sys.argv[1])):
     n = str(i)
-    cmd = head + " -avd avd" + n + kvm + tail
+    port = str(5554 + i*2)
+    cmd = head + " -port " + port + " -avd avd" + n + kvm + tail
     print cmd
     os.system(cmd)
     time.sleep(2)
 
 if __name__ == "__main__":
   main()
-

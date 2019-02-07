@@ -4,8 +4,8 @@ import sys, os, tempfile
 
 def main():
   if len(sys.argv) != 2:
-    print "Please enter the listening port number of your app"
-    print "Usage: " + sys.argv[0] + " <port>"
+    print ("Please enter the listening port number of your app")
+    print ("Usage: " + sys.argv[0] + " <port>")
     return
 
   fd, name = tempfile.mkstemp()
@@ -16,7 +16,7 @@ def main():
   f = open(name, "r")
   for line in f:
     if "offline" in line:
-      print "Some AVDs are offline. Please try again."
+      print ("Some AVDs are offline. Please try again.")
       f.close()
       os.remove(name)
       return
@@ -31,12 +31,12 @@ def main():
     emu_name = line.split()[0].strip()
     port = str(int(emu_name.split("-")[1]) * 2)
     cmd = "adb -s " + emu_name + " forward tcp:" + port + " tcp:" + lport
-    print cmd
+    print (cmd)
     os.system(cmd)
     cnt = cnt + 1
 
   if cnt == 0:
-    print "There is no AVD running"
+    print ("There is no AVD running")
 
   f.close()
   os.remove(name)
